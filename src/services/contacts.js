@@ -1,9 +1,24 @@
 import { Contact } from '../db/models/contacts.js';
 
-export const getAllContacts = async (page, perPage, sortBy, sortOrder) => {
+export const getAllContacts = async (
+  page,
+  perPage,
+  sortBy,
+  sortOrder,
+  type,
+  isFavourite,
+) => {
   const skip = page > 0 ? (page - 1) * perPage : 0;
 
   const contactQuery = Contact.find();
+
+  if (type !== undefined) {
+    contactQuery.where('contactType').equals(type);
+  }
+
+  if (isFavourite !== undefined) {
+    contactQuery.where('isFavourite').equals(isFavourite);
+  }
 
   const [totalItems, data] = await Promise.all([
     Contact.countDocuments(contactQuery),
