@@ -77,7 +77,7 @@ export const patchContactController = async (req, res, next) => {
   const id = req.params.contactId;
   const body = req.body;
   const userId = req.user._id;
-  const contact = await patchContact(id, body);
+  const contact = await patchContact(id, userId, body);
 
   if (!contact) {
     return next(createHttpError(404, 'Contact not found'));
