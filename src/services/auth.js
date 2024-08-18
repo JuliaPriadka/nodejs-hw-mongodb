@@ -5,6 +5,18 @@ import { randomBytes } from 'node:crypto';
 import { SessionsCollection } from '../db/models/sessions.js';
 import { FIFTEEN_MINUTES, ONE_MONTH } from '../constants/constants.js';
 
+const createSession = () => {
+  const accessToken = randomBytes(20).toString('base64');
+  const refreshToken = randomBytes(20).toString('base64');
+
+  return {
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_MONTH),
+  };
+};
+
 export const registerUser = async (payload) => {
   const existedEmail = await UsersCollection.findOne({ email: payload.email });
 
@@ -23,6 +35,7 @@ export const loginUser = async (payload) => {
   const existedUser = await UsersCollection.findOne({
     email: payload.email,
   });
+
   if (!existedUser) {
     throw createHttpError(401, 'User not found');
   }
@@ -38,18 +51,49 @@ export const loginUser = async (payload) => {
 
   await SessionsCollection.deleteOne({ userId: existedUser._id });
 
-  const accessToken = randomBytes(20).toString('base64');
-  const refreshToken = randomBytes(20).toString('base64');
+  const newSession = createSession();
 
   return await SessionsCollection.create({
     userId: existedUser._id,
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + ONE_MONTH),
+    ...newSession,
   });
+
+  // const accessToken = randomBytes(20).toString('base64');
+  // const refreshToken = randomBytes(20).toString('base64');
+
+  // return await SessionsCollection.create({
+  //   userId: existedUser._id,
+  //   accessToken,
+  //   refreshToken,
+  //   accessTokenValidUntil: Date.now() + FIFTEEN_MINUTES,
+  //   refreshTokenValidUntil: Date.now() + ONE_MONTH,
+  // });
 };
 
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.deleteOne({ _id: sessionId });
+};
+
+export const refreshUser = async (sessionId, refreshToken) => {
+  const existedSession = await SessionsCollection.findOne({
+    _id: sessionId,
+    refreshToken,
+  });
+
+  if (!existedSession) {
+    throw createHttpError(401, 'Session not found');
+  }
+
+  if (new Date() > new Date(existedSession.refreshTokenValidUntil)) {
+    throw createHttpError(401, 'Refresh Token isn`t valid');
+  }
+
+  await SessionsCollection.deleteOne({ _id: existedSession._id });
+
+  const newSession = createSession();
+
+  return await SessionsCollection.create({
+    userId: existedSession.userId,
+    ...newSession,
+  });
 };
