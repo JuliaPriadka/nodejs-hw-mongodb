@@ -2,6 +2,9 @@ import createHttpError from 'http-errors';
 import { UsersCollection } from '../db/models/users.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import fs from 'node:fs';
+import path from 'node:path';
+import handlebars from 'handlebars';
 import { randomBytes } from 'node:crypto';
 import { SessionsCollection } from '../db/models/sessions.js';
 import {
@@ -12,7 +15,6 @@ import {
   DOMAIN,
 } from '../constants/constants.js';
 import { sendEmail } from '../utils/sendMail.js';
-import { log } from 'node:console';
 
 const createSession = () => {
   const accessToken = randomBytes(20).toString('base64');
@@ -105,12 +107,19 @@ export const sendResetPasswordEmail = async (email) => {
 
   const token = jwt.sign({ sub: user._id, email }, SECRET, { expiresIn: '5m' });
 
+  const emailTemplate = fs.readFileSync(
+    path.resolve('src', 'templates', 'templates.hbs'),
+    { encoding: 'utf-8' },
+  );
+  const template = handlebars.compile(emailTemplate);
+  const html = template({ user: user.name, domain: DOMAIN, token: token });
+
   try {
     await sendEmail({
       from: SMTP.FROM,
       to: email,
       subject: 'Reset password',
-      html: `<p>If you want to reset your password please click the <a href="${DOMAIN}/reset-password?token=${token}">link</a></p>`, // html body
+      html,
     });
   } catch (error) {
     throw createHttpError(
@@ -139,6 +148,8 @@ export const resetPassword = async (password, token) => {
       { _id: user._id, email: user.email },
       { password: newPassword },
     );
+
+    await SessionsCollection.deleteOne({ userId: user._id });
   } catch (error) {
     if (
       error.name === 'TokenExpiredError' ||
