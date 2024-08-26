@@ -26,3 +26,9 @@ export const SMTP = {
 export const SECRET = env('JWT_SECRET');
 
 export const DOMAIN = env('APP_DOMAIN');
+
+export const CLOUDINARY = {
+  NAME: env('CLOUDINARY_NAME'),
+  KEY: env('CLOUDINARY_KEY'),
+  SECRET: env('CLOUDINARY_SECRET'),
+};
