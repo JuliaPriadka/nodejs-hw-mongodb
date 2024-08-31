@@ -48,16 +48,20 @@ export const getContactById = (contactId, userId) => {
   return Contact.findOne({ _id: contactId, userId });
 };
 
-export const postContact = (payload, userId) => {
-  return Contact.create({ userId, ...payload });
+export const postContact = (payload, userId, photo) => {
+  return Contact.create({ photo, userId, ...payload });
 };
 
 export const deleteContact = (contactId, userId) => {
   return Contact.findOneAndDelete({ _id: contactId, userId });
 };
 
-export const patchContact = (contactId, userId, payload) => {
-  return Contact.findOneAndUpdate({ _id: contactId, userId }, payload, {
-    new: true,
-  });
+export const patchContact = (contactId, userId, payload, photoUrl) => {
+  return Contact.findOneAndUpdate(
+    { _id: contactId, userId },
+    { ...payload, photo: photoUrl },
+    {
+      new: true,
+    },
+  );
 };
