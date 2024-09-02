@@ -46,4 +46,4 @@ properties:
   updatedAt:
     description: Date and time when contact was updated
     type: string
-    example: Date and time when contact was created
+    example: 2024-08-26T12:55:44.834Z
