@@ -1,0 +1,28 @@
+type: object
+required:
+  - _id
+  - name
+  - email
+  - createdAt
+  - updatedAt
+properties:
+  _id:
+    description: User's id
+    type: string
+    example: 66ccc571e22d558571373339
+  name:
+    description: User's name
+    type: string
+    example: 'John Doe'
+  email:
+    description: User`s email
+    type: string
+    example: johndoe@mail.com
+  createdAt:
+    description: Date and time when contact was created
+    type: string
+    example: 2024-08-26T12:55:44.834Z
+  updatedAt:
+    description: Date and time when contact was updated
+    type: string
+    example: 2024-08-26T12:55:44.834Z

@@ -1,0 +1,53 @@
+tags:
+  - Auth
+summary: Login user
+operationId: loginUser
+description: 'Login user'
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            description: 'User`s email'
+            type: string
+            example: 'johndoe@mail.com'
+          password:
+            description: 'User`s password. Should be from 3 to 10 symbols long'
+            type: string
+            example: '1234567'
+responses:
+  '201':
+    description: 'Register a user'
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Successfully logged in an user!'
+            data:
+              type: object
+              required:
+                - accessToken
+              properties:
+                accessToken:
+                  description: 'User`s access token'
+                  type: string
+                  example: 'WhuFFyiD8z9YS0oOF1VDjsuVyDQ'
+  '401':
+    $ref: ..\..\components\responses\401.yaml
