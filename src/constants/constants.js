@@ -1,4 +1,5 @@
 import { env } from '../utils/env.js';
+import path from 'node:path';
 
 export const SORT_ORDER = {
   ASC: 'asc',
@@ -32,3 +33,5 @@ export const CLOUDINARY = {
   KEY: env('CLOUDINARY_KEY'),
   SECRET: env('CLOUDINARY_SECRET'),
 };
+
+export const SWAGGER_PATH = path.resolve('docs', 'swagger.json');
