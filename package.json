@@ -6,12 +6,16 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "build": "npm run build-docs",
+    "build-docs": "redocly bundle --ext json -o docs/swagger.json",
+    "preview-docs": "redocly preview-docs"
   },
   "keywords": [],
   "author": "Julia Priadka <priadkajulia@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "@redocly/cli": "^1.22.1",
     "nodemon": "^3.1.4",
     "pino-pretty": "^11.2.1"
   },
@@ -29,6 +33,7 @@
     "mongoose": "^8.5.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
-    "pino-http": "^10.2.0"
+    "pino-http": "^10.2.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }
